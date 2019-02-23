@@ -69,19 +69,17 @@ func doObject(args []string) (interface{}, error) {
 }
 
 func doVersion() error {
-	b, err := json.Marshal(&Version{
+	enc := json.NewEncoder(os.Stdout)
+	if *pretty {
+		enc.SetIndent("", "    ")
+	}
+	return enc.Encode(&Version{
 		Program:     "gjo",
 		Description: "This is inspired by jpmens/jo",
 		Author:      "gorilla0513",
 		Repo:        "https://github.com/skanehira/gjo",
 		Version:     "1.0.0",
 	})
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(b))
-	return nil
 }
 
 func run() int {
