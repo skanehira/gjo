@@ -34,7 +34,7 @@ func parseValue(s string) interface{} {
 
 func doArray(args []string) (interface{}, error) {
 	jsons := []interface{}{}
-	for _, value := range flag.Args() {
+	for _, value := range args {
 		jsons = append(jsons, parseValue(value))
 	}
 	return jsons, nil
@@ -42,7 +42,7 @@ func doArray(args []string) (interface{}, error) {
 
 func doObject(args []string) (interface{}, error) {
 	jsons := make(map[string]interface{}, len(args))
-	for _, arg := range flag.Args() {
+	for _, arg := range args {
 		kv := strings.SplitN(arg, "=", 2)
 		s := ""
 		if len(kv) > 0 {
