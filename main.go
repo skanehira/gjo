@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"strings"
+)
+
+var (
+	format = flag.Bool("f", false, "format json")
 )
 
 func main() {
@@ -30,10 +35,21 @@ func main() {
 	}
 
 	if len(jsons) != 0 {
-		output, err := json.Marshal(jsons)
+		var output string
+		j, err := json.Marshal(jsons)
+
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(string(output))
+
+		if *format {
+			out := new(bytes.Buffer)
+			json.Indent(out, j, "", "    ")
+			output = out.String()
+		} else {
+			output = string(j)
+		}
+
+		fmt.Println(output)
 	}
 }
