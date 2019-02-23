@@ -19,6 +19,10 @@ $ GO111MODULE=on go install
 ```sh
 $ gjo name=gorilla age=26 isGorilla=true
 {"age":"26","isGorilla":true,"name":"gorilla"}
+$ gjo -h
+Usage of gjo:
+  -f    format json
+  -v    show version
 ```
 
 ## Author
