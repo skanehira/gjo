@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
+	"strconv"
 	"strings"
 )
 
@@ -20,18 +22,30 @@ func main() {
 
 	for _, arg := range flag.Args() {
 		kv := strings.SplitN(arg, "=", 2)
-		if len(kv) == 2 {
-			key, value := kv[0], kv[1]
-
-			switch value {
-			case "true":
-				jsons[key] = true
-			case "false":
-				jsons[key] = false
-			default:
-				jsons[key] = value
-			}
+		if len(kv) != 2 {
+			log.Fatal("Argument `a' is neither k=v nor k@v")
 		}
+		key, value := kv[0], kv[1]
+
+		if value == "" {
+			jsons[key] = nil
+			continue
+		}
+		if value == "true" {
+			jsons[key] = true
+			continue
+		}
+		if value == "false" {
+			jsons[key] = false
+			continue
+		}
+
+		f, err := strconv.ParseFloat(key, 64)
+		if err == nil {
+			jsons[key] = f
+			continue
+		}
+		jsons[key] = value
 	}
 
 	if len(jsons) != 0 {
