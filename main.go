@@ -3,26 +3,27 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"log"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
 var (
-	format = flag.Bool("f", false, "format json")
+	pretty = flag.Bool("p", false, "pretty-prints")
 )
 
-func main() {
-	flag.Parse()
-	args := flag.Args()
-
+func doObject(args []string) error {
 	jsons := make(map[string]interface{}, len(args))
 
 	for _, arg := range flag.Args() {
 		kv := strings.SplitN(arg, "=", 2)
+		s := ""
+		if len(kv) > 0 {
+			s = kv[0]
+		}
 		if len(kv) != 2 {
-			log.Fatal("Argument `a' is neither k=v nor k@v")
+			return fmt.Errorf("Argument %q is neither k=v nor k@v", s)
 		}
 		key, value := kv[0], kv[1]
 
@@ -49,12 +50,26 @@ func main() {
 
 	if len(jsons) != 0 {
 		enc := json.NewEncoder(os.Stdout)
-		if *format {
+		if *pretty {
 			enc.SetIndent("", "    ")
 		}
 		err := enc.Encode(jsons)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
+	}
+	return nil
+}
+
+func main() {
+	flag.Parse()
+	args := flag.Args()
+	if len(args) == 0 {
+		flag.Usage()
+		os.Exit(2)
+	}
+	err := doObject(args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
 	}
 }
