@@ -25,6 +25,10 @@ var (
 )
 
 func parseValue(s string) interface{} {
+	if strings.Contains(s, "{") && strings.Contains(s, "}") {
+		return json.RawMessage(s)
+	}
+
 	if s == "" {
 		return nil
 	}
