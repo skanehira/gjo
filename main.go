@@ -1,11 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -49,21 +48,13 @@ func main() {
 	}
 
 	if len(jsons) != 0 {
-		var output string
-		j, err := json.Marshal(jsons)
-
-		if err != nil {
-			panic(err)
-		}
-
+		enc := json.NewEncoder(os.Stdout)
 		if *format {
-			out := new(bytes.Buffer)
-			json.Indent(out, j, "", "    ")
-			output = out.String()
-		} else {
-			output = string(j)
+			enc.SetIndent("", "    ")
 		}
-
-		fmt.Println(output)
+		err := enc.Encode(jsons)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
