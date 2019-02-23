@@ -9,9 +9,19 @@ import (
 	"strings"
 )
 
+// Version gjo version info
+type Version struct {
+	Program     string `json:"program"`
+	Description string `json:"description"`
+	Author      string `json:"author"`
+	Repo        string `json:"repo"`
+	Version     string `json:"version"`
+}
+
 var (
-	array  = flag.Bool("a", false, "creates an array of words")
-	pretty = flag.Bool("p", false, "pretty-prints")
+	array   = flag.Bool("a", false, "creates an array of words")
+	pretty  = flag.Bool("p", false, "pretty-prints")
+	version = flag.Bool("v", false, "show version")
 )
 
 func parseValue(s string) interface{} {
@@ -58,8 +68,33 @@ func doObject(args []string) (interface{}, error) {
 	return jsons, nil
 }
 
+func doVersion() error {
+	b, err := json.Marshal(&Version{
+		Program:     "gjo",
+		Description: "This is inspired by jpmens/jo",
+		Author:      "gorilla0513",
+		Repo:        "https://github.com/skanehira/gjo",
+		Version:     "1.0.0",
+	})
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(string(b))
+	return nil
+}
+
 func run() int {
 	flag.Parse()
+	if *version {
+		err := doVersion()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			return 1
+		}
+		return 0
+	}
+
 	args := flag.Args()
 	if len(args) == 0 {
 		flag.Usage()
