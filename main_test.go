@@ -21,6 +21,7 @@ func TestObject(t *testing.T) {
 		{input: []string{`a=true`}, want: `{"a":true}`, err: ``},
 		{input: []string{`a=false`}, want: `{"a":false}`, err: ``},
 		{input: []string{`a=s`}, want: `{"a":"s"}`, err: ``},
+		{input: []string{`a={"a":"s"}`}, want: `{"a":{"a":"s"}}`, err: ``},
 	}
 
 	for _, test := range tests {
