@@ -19,7 +19,7 @@ func main() {
 	jsons := make(map[string]interface{}, len(args))
 
 	for _, arg := range flag.Args() {
-		kv := strings.Split(arg, "=")
+		kv := strings.SplitN(arg, "=", 2)
 		if len(kv) == 2 {
 			key, value := kv[0], kv[1]
 
