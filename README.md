@@ -17,11 +17,22 @@ $ GO111MODULE=on go install
 
 ## Usage
 ```sh
-$ gjo name=gorilla age=26 isGorilla=true
-{"age":"26","isGorilla":true,"name":"gorilla"}
+$ gjo -p status=$(jo name=gorilla age=26 lang=$(gjo -a Go Java PHP))
+{
+    "status": {
+        "name": "gorilla",
+        "age": 26,
+        "lang": [
+            "Go",
+            "Java",
+            "PHP"
+        ]
+    }
+}
 $ gjo -h
 Usage of gjo:
-  -f    format json
+  -a    creates an array of words
+  -p    pretty-prints
   -v    show version
 ```
 
