@@ -14,37 +14,34 @@ var (
 	pretty = flag.Bool("p", false, "pretty-prints")
 )
 
-func doArray(args []string) (interface{}, error) {
-	jsons := []interface{}{}
-
-	for _, value := range flag.Args() {
-		if value == "" {
-			jsons = append(jsons, nil)
-			continue
-		}
-		if value == "true" {
-			jsons = append(jsons, true)
-			continue
-		}
-		if value == "false" {
-			jsons = append(jsons, false)
-			continue
-		}
-
-		f, err := strconv.ParseFloat(value, 64)
-		if err == nil {
-			jsons = append(jsons, f)
-			continue
-		}
-		jsons = append(jsons, value)
+func parseValue(s string) interface{} {
+	if s == "" {
+		return nil
+	}
+	if s == "true" {
+		return true
+	}
+	if s == "false" {
+		return false
 	}
 
+	f, err := strconv.ParseFloat(s, 64)
+	if err == nil {
+		return f
+	}
+	return s
+}
+
+func doArray(args []string) (interface{}, error) {
+	jsons := []interface{}{}
+	for _, value := range flag.Args() {
+		jsons = append(jsons, parseValue(value))
+	}
 	return jsons, nil
 }
 
 func doObject(args []string) (interface{}, error) {
 	jsons := make(map[string]interface{}, len(args))
-
 	for _, arg := range flag.Args() {
 		kv := strings.SplitN(arg, "=", 2)
 		s := ""
@@ -55,26 +52,7 @@ func doObject(args []string) (interface{}, error) {
 			return nil, fmt.Errorf("Argument %q is neither k=v nor k@v", s)
 		}
 		key, value := kv[0], kv[1]
-
-		if value == "" {
-			jsons[key] = nil
-			continue
-		}
-		if value == "true" {
-			jsons[key] = true
-			continue
-		}
-		if value == "false" {
-			jsons[key] = false
-			continue
-		}
-
-		f, err := strconv.ParseFloat(value, 64)
-		if err == nil {
-			jsons[key] = f
-			continue
-		}
-		jsons[key] = value
+		jsons[key] = parseValue(value)
 	}
 
 	return jsons, nil
