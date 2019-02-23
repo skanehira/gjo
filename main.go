@@ -24,13 +24,22 @@ var (
 	version = flag.Bool("v", false, "show version")
 )
 
-func parseValue(s string) interface{} {
-	if (strings.Contains(s, "{") && strings.Contains(s, "}")) || (strings.Contains(s, "[") && strings.Contains(s, "]")) {
-		return json.RawMessage(s)
+func isRawString(s string) bool {
+	if strings.HasPrefix(s, "{") && strings.HasSuffix(s, "}") {
+		return true
 	}
+	if strings.HasPrefix(s, "[") && strings.HasSuffix(s, "]") {
+		return true
+	}
+	return false
+}
 
+func parseValue(s string) interface{} {
 	if s == "" {
 		return nil
+	}
+	if isRawString(s) {
+		return json.RawMessage(s)
 	}
 	if s == "true" {
 		return true
