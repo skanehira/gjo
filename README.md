@@ -17,16 +17,16 @@ $ GO111MODULE=on go install
 
 ## Usage
 ```sh
-$ gjo -p status=$(jo name=gorilla age=26 lang=$(gjo -a Go Java PHP))
+$ gjo -p status=$(gjo name=gorilla age=26 lang=$(gjo -a Go Java PHP))
 {
     "status": {
-        "name": "gorilla",
         "age": 26,
         "lang": [
             "Go",
             "Java",
             "PHP"
-        ]
+        ],
+        "name": "gorilla"
     }
 }
 $ gjo -h
