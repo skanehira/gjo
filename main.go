@@ -1,10 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
+	"os"
+	"strconv"
 	"strings"
 )
 
@@ -18,69 +19,110 @@ type Version struct {
 }
 
 var (
-	format  = flag.Bool("f", false, "format json")
+	array   = flag.Bool("a", false, "creates an array of words")
+	pretty  = flag.Bool("p", false, "pretty-prints")
 	version = flag.Bool("v", false, "show version")
 )
 
-func main() {
-	flag.Parse()
-	args := flag.Args()
-
-	// if version flag is true, display version info
-	if *version {
-		b, err := json.Marshal(&Version{
-			Program:     "gjo",
-			Description: "This is inspired by jpmens/jo",
-			Author:      "gorilla0513",
-			Repo:        "https://github.com/skanehira/gjo",
-			Version:     "1.0.0",
-		})
-
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println(string(b))
-		return
+func parseValue(s string) interface{} {
+	if s == "" {
+		return nil
+	}
+	if s == "true" {
+		return true
+	}
+	if s == "false" {
+		return false
 	}
 
-	// parse args to map
+	f, err := strconv.ParseFloat(s, 64)
+	if err == nil {
+		return f
+	}
+	return s
+}
+
+func doArray(args []string) (interface{}, error) {
+	jsons := []interface{}{}
+	for _, value := range args {
+		jsons = append(jsons, parseValue(value))
+	}
+	return jsons, nil
+}
+
+func doObject(args []string) (interface{}, error) {
 	jsons := make(map[string]interface{}, len(args))
-
-	for _, arg := range flag.Args() {
-		kv := strings.Split(arg, "=")
-		if len(kv) == 2 {
-			key, value := kv[0], kv[1]
-
-			switch value {
-			case "true":
-				jsons[key] = true
-			case "false":
-				jsons[key] = false
-			default:
-				jsons[key] = value
-			}
+	for _, arg := range args {
+		kv := strings.SplitN(arg, "=", 2)
+		s := ""
+		if len(kv) > 0 {
+			s = kv[0]
 		}
+		if len(kv) != 2 {
+			return nil, fmt.Errorf("Argument %q is neither k=v nor k@v", s)
+		}
+		key, value := kv[0], kv[1]
+		jsons[key] = parseValue(value)
 	}
 
-	if len(jsons) != 0 {
-		// parse map to json string
-		var output string
-		j, err := json.Marshal(jsons)
+	return jsons, nil
+}
 
+func doVersion() error {
+	enc := json.NewEncoder(os.Stdout)
+	if *pretty {
+		enc.SetIndent("", "    ")
+	}
+	return enc.Encode(&Version{
+		Program:     "gjo",
+		Description: "This is inspired by jpmens/jo",
+		Author:      "gorilla0513",
+		Repo:        "https://github.com/skanehira/gjo",
+		Version:     "1.0.0",
+	})
+}
+
+func run() int {
+	flag.Parse()
+	if *version {
+		err := doVersion()
 		if err != nil {
-			panic(err)
+			fmt.Fprintln(os.Stderr, err)
+			return 1
 		}
-
-		// if format flag is true, format json string
-		if *format {
-			out := new(bytes.Buffer)
-			json.Indent(out, j, "", "    ")
-			output = out.String()
-		} else {
-			output = string(j)
-		}
-
-		fmt.Println(output)
+		return 0
 	}
+
+	args := flag.Args()
+	if len(args) == 0 {
+		flag.Usage()
+		return 2
+	}
+
+	var value interface{}
+	var err error
+
+	if *array {
+		value, err = doArray(args)
+	} else {
+		value, err = doObject(args)
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	enc := json.NewEncoder(os.Stdout)
+	if *pretty {
+		enc.SetIndent("", "    ")
+	}
+	err = enc.Encode(value)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return 1
+	}
+	return 0
+}
+
+func main() {
+	os.Exit(run())
 }
