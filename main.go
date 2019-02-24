@@ -91,7 +91,7 @@ func doVersion() error {
 		Description: "This is inspired by jpmens/jo",
 		Author:      "gorilla0513",
 		Repo:        "https://github.com/skanehira/gjo",
-		Version:     "1.0.0",
+		Version:     "1.0.2",
 	})
 }
 
