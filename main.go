@@ -72,7 +72,7 @@ func doObject(args []string) (interface{}, error) {
 			s = kv[0]
 		}
 		if len(kv) != 2 {
-			return nil, fmt.Errorf("Argument %q is neither k=v nor k@v", s)
+			return nil, fmt.Errorf("Argument %q is not k=v", s)
 		}
 		key, value := kv[0], kv[1]
 		jsons[key] = parseValue(value)
