@@ -17,7 +17,7 @@ This was inspired by [jpmens/jo](https://github.com/jpmens/jo).
 ### Build
 
 ```sh
-go get github.com/skanehira/gjo.git
+$ go get github.com/skanehira/gjo.git
 ```
 
 You can also manually install this tool using git command.
