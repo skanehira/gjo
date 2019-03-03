@@ -15,6 +15,13 @@ This was inspired by [jpmens/jo](https://github.com/jpmens/jo).
 
 ## Installtion
 ### Build
+
+```sh
+go get github.com/skanehira/gjo.git
+```
+
+You can also manually install this tool using git command.
+
 ```sh
 $ git clone https://github.com/skanehira/gjo.git
 $ cd gjo
