@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
+	"os"
 	"strings"
 	"testing"
 )
@@ -13,8 +15,8 @@ func TestObject(t *testing.T) {
 		want  string
 		err   string
 	}{
-		{input: []string{``}, want: ``, err: `Argument "" is neither k=v nor k@v`},
-		{input: []string{`a`}, want: ``, err: `Argument "a" is neither k=v nor k@v`},
+		{input: []string{``}, want: ``, err: `Argument "" is not k=v`},
+		{input: []string{`a`}, want: ``, err: `Argument "a" is not k=v`},
 		{input: []string{`a=`}, want: `{"a":null}`, err: ``},
 		{input: []string{`a=1`}, want: `{"a":1}`, err: ``},
 		{input: []string{`a=1.1`}, want: `{"a":1.1}`, err: ``},
@@ -76,6 +78,52 @@ func TestArray(t *testing.T) {
 			if got != test.want {
 				t.Fatalf("want %q, but got %q", test.want, got)
 			}
+		}
+	}
+}
+
+func TestVersion(t *testing.T) {
+	tests := []struct {
+		pretty bool
+		want   error
+	}{
+		{pretty: false, want: nil},
+		{pretty: true, want: nil},
+	}
+
+	for _, test := range tests {
+		*pretty = test.pretty
+		got := doVersion()
+		if got != test.want {
+			t.Fatalf("want %q, but get %q", test.want, got)
+		}
+	}
+
+}
+
+func TestRun(t *testing.T) {
+	tests := []struct {
+		args  map[string]string
+		input []string
+		want  int
+	}{
+		{args: map[string]string{"a": "true", "p": "flase", "v": "false"}, input: []string{`gorilla`, `dog`}, want: 0},
+		{args: map[string]string{"p": "true", "a": "flase", "v": "false"}, input: []string{`name=gorilla`}, want: 0},
+		{args: map[string]string{"p": "true", "a": "true", "v": "false"}, input: []string{`gorilla`, `cat`}, want: 0},
+		{args: map[string]string{"v": "true"}, input: []string{""}, want: 0},
+		{args: map[string]string{"p": "false", "a": "false", "v": "false"}, input: []string{`gorilla`}, want: 1},
+	}
+
+	for _, test := range tests {
+		os.Args = append([]string{""}, test.input...)
+
+		for arg, value := range test.args {
+			flag.CommandLine.Set(arg, value)
+		}
+
+		got := run()
+		if got != test.want {
+			t.Fatalf("want %v, but get %v", test.want, got)
 		}
 	}
 }
