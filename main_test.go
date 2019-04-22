@@ -17,7 +17,7 @@ func TestObject(t *testing.T) {
 	}{
 		{input: []string{``}, want: ``, err: `Argument "" is not k=v`},
 		{input: []string{`a`}, want: ``, err: `Argument "a" is not k=v`},
-		{input: []string{`a=`}, want: `{"a":null}`, err: ``},
+		{input: []string{`a=`}, want: `{"a":""}`, err: ``},
 		{input: []string{`a=1`}, want: `{"a":1}`, err: ``},
 		{input: []string{`a=1.1`}, want: `{"a":1.1}`, err: ``},
 		{input: []string{`a=true`}, want: `{"a":true}`, err: ``},
@@ -53,7 +53,7 @@ func TestArray(t *testing.T) {
 		want  string
 		err   string
 	}{
-		{input: []string{``}, want: `[null]`, err: ``},
+		{input: []string{``}, want: `[""]`, err: ``},
 		{input: []string{`a`}, want: `["a"]`, err: ``},
 		{input: []string{`1`}, want: `[1]`, err: ``},
 		{input: []string{`1.1`}, want: `[1.1]`, err: ``},

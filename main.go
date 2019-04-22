@@ -36,7 +36,7 @@ func isRawString(s string) bool {
 
 func parseValue(s string) interface{} {
 	if s == "" {
-		return nil
+		return ""
 	}
 	if isRawString(s) {
 		return json.RawMessage(s)
