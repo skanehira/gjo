@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -22,6 +23,10 @@ var (
 	array   = flag.Bool("a", false, "creates an array of words")
 	pretty  = flag.Bool("p", false, "pretty-prints")
 	version = flag.Bool("v", false, "show version")
+
+	stdin  io.Reader = os.Stdin
+	stdout io.Writer = os.Stdout
+	stderr io.Writer = os.Stderr
 )
 
 func isRawString(s string) bool {
@@ -55,12 +60,30 @@ func parseValue(s string) interface{} {
 	return s
 }
 
+func readFile(fname string) (interface{}, error) {
+	f, err := os.Open(fname)
+	if err != nil {
+		return nil, err
+	}
+	var v interface{}
+	err = json.NewDecoder(f).Decode(&v)
+	if err != nil {
+		return nil, err
+	}
+	return v, nil
+}
+
 func doArray(args []string) (interface{}, error) {
 	jsons := []interface{}{}
 	for _, value := range args {
 		jsons = append(jsons, parseValue(value))
 	}
 	return jsons, nil
+}
+
+func isKeyFile(s string) bool {
+	pos := strings.IndexRune(s, ':')
+	return pos > 0 && pos == len(s)-1
 }
 
 func doObject(args []string) (interface{}, error) {
@@ -74,15 +97,25 @@ func doObject(args []string) (interface{}, error) {
 		if len(kv) != 2 {
 			return nil, fmt.Errorf("Argument %q is not k=v", s)
 		}
-		key, value := kv[0], kv[1]
-		jsons[key] = parseValue(value)
+		if isKeyFile(kv[0]) {
+			// For argument a:=b, read value from file "b".
+			key := kv[0][:len(kv[0])-1]
+			v, err := readFile(kv[1])
+			if err != nil {
+				return v, err
+			}
+			jsons[key] = v
+		} else {
+			key, value := kv[0], kv[1]
+			jsons[key] = parseValue(value)
+		}
 	}
 
 	return jsons, nil
 }
 
 func doVersion() error {
-	enc := json.NewEncoder(os.Stdout)
+	enc := json.NewEncoder(stdout)
 	if *pretty {
 		enc.SetIndent("", "    ")
 	}
@@ -100,7 +133,7 @@ func run() int {
 	if *version {
 		err := doVersion()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			fmt.Fprintln(stderr, err)
 			return 1
 		}
 		return 0
@@ -121,16 +154,16 @@ func run() int {
 		value, err = doObject(args)
 	}
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(stderr, err)
 		return 1
 	}
-	enc := json.NewEncoder(os.Stdout)
+	enc := json.NewEncoder(stdout)
 	if *pretty {
 		enc.SetIndent("", "    ")
 	}
 	err = enc.Encode(value)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		fmt.Fprintln(stderr, err)
 		return 1
 	}
 	return 0

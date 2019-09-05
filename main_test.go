@@ -25,6 +25,7 @@ func TestObject(t *testing.T) {
 		{input: []string{`a=s`}, want: `{"a":"s"}`, err: ``},
 		{input: []string{`a={"a":"s"}`}, want: `{"a":{"a":"s"}}`, err: ``},
 		{input: []string{`a=["a","s"]`}, want: `{"a":["a","s"]}`, err: ``},
+		{input: []string{`a:=testdata/test.json`}, want: `{"a":{"foo":true}}`, err: ``},
 	}
 
 	for _, test := range tests {
@@ -91,6 +92,16 @@ func TestVersion(t *testing.T) {
 		{pretty: true, want: nil},
 	}
 
+	var bufstdout, bufstderr bytes.Buffer
+	oldstdout := stdout
+	oldstderr := stderr
+	stdout = &bufstdout
+	stderr = &bufstderr
+	defer func() {
+		stdout = oldstdout
+		stderr = oldstderr
+	}()
+
 	for _, test := range tests {
 		*pretty = test.pretty
 		got := doVersion()
@@ -114,6 +125,16 @@ func TestRun(t *testing.T) {
 		{args: map[string]string{"p": "false", "a": "false", "v": "false"}, input: []string{`gorilla`}, want: 1},
 	}
 
+	var bufstdout, bufstderr bytes.Buffer
+	oldstdout := stdout
+	oldstderr := stderr
+	stdout = &bufstdout
+	stderr = &bufstderr
+	defer func() {
+		stdout = oldstdout
+		stderr = oldstderr
+	}()
+
 	for _, test := range tests {
 		os.Args = append([]string{""}, test.input...)
 
@@ -122,6 +143,27 @@ func TestRun(t *testing.T) {
 		}
 
 		got := run()
+		if got != test.want {
+			t.Fatalf("want %v, but get %v", test.want, got)
+		}
+	}
+}
+
+func TestIsKeyFile(t *testing.T) {
+	tests := []struct {
+		arg  string
+		want bool
+	}{
+		{arg: "", want: false},
+		{arg: ":", want: false},
+		{arg: "a", want: false},
+		{arg: "a:", want: true},
+		{arg: "a:=", want: false},
+		{arg: "a::", want: false},
+	}
+
+	for _, test := range tests {
+		got := isKeyFile(test.arg)
 		if got != test.want {
 			t.Fatalf("want %v, but get %v", test.want, got)
 		}
