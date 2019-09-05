@@ -93,14 +93,9 @@ func TestVersion(t *testing.T) {
 	}
 
 	var bufstdout, bufstderr bytes.Buffer
-	oldstdout := stdout
-	oldstderr := stderr
-	stdout = &bufstdout
-	stderr = &bufstderr
-	defer func() {
-		stdout = oldstdout
-		stderr = oldstderr
-	}()
+	oldstdout, oldstderr := stdout, stderr
+	stdout, stderr = &bufstdout, &bufstderr
+	defer func() { stdout, stderr = oldstdout, oldstderr }()
 
 	for _, test := range tests {
 		*pretty = test.pretty
@@ -126,14 +121,9 @@ func TestRun(t *testing.T) {
 	}
 
 	var bufstdout, bufstderr bytes.Buffer
-	oldstdout := stdout
-	oldstderr := stderr
-	stdout = &bufstdout
-	stderr = &bufstderr
-	defer func() {
-		stdout = oldstdout
-		stderr = oldstderr
-	}()
+	oldstdout, oldstderr := stdout, stderr
+	stdout, stderr = &bufstdout, &bufstderr
+	defer func() { stdout, stderr = oldstdout, oldstderr }()
 
 	for _, test := range tests {
 		os.Args = append([]string{""}, test.input...)
