@@ -99,15 +99,14 @@ func doObject(args []string) (interface{}, error) {
 		}
 		if isKeyFile(kv[0]) {
 			// For argument a:=b, read value from file "b".
-			key := kv[0][:len(kv[0])-1]
 			v, err := readFile(kv[1])
 			if err != nil {
 				return v, err
 			}
+			key := kv[0][:len(kv[0])-1]
 			jsons[key] = v
 		} else {
-			key, value := kv[0], kv[1]
-			jsons[key] = parseValue(value)
+			jsons[kv[0]] = parseValue(kv[1])
 		}
 	}
 
