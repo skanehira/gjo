@@ -1,9 +1,10 @@
 # gjo
 
+[![GitHub Actoins status](https://github.com/skanehira/gjo/workflows/Go/badge.svg)](https://github.com/skanehira/gjo/actions)
 [![CircleCI](https://circleci.com/gh/skanehira/gjo.svg?style=svg)](https://circleci.com/gh/skanehira/gjo)
 [![Go Report Card](https://goreportcard.com/badge/github.com/skanehira/gjo)](https://goreportcard.com/report/github.com/skanehira/gjo)
 
-Small utility to create JSON objects.  
+Small utility to create JSON objects.
 This was inspired by [jpmens/jo](https://github.com/jpmens/jo).
 
 ![sreenshot](./screenshot.png)
