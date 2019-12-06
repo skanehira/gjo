@@ -36,6 +36,9 @@ func isRawString(s string) bool {
 	if strings.HasPrefix(s, "[") && strings.HasSuffix(s, "]") {
 		return true
 	}
+	if strings.HasPrefix(s, "\"") && strings.HasSuffix(s, "\"") {
+		return true
+	}
 	return false
 }
 

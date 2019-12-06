@@ -26,6 +26,7 @@ func TestObject(t *testing.T) {
 		{input: []string{`a={"a":"s"}`}, want: `{"a":{"a":"s"}}`, err: ``},
 		{input: []string{`a=["a","s"]`}, want: `{"a":["a","s"]}`, err: ``},
 		{input: []string{`a:=testdata/test.json`}, want: `{"a":{"foo":true}}`, err: ``},
+		{input: []string{`a="+123456"`}, want: `{"a":"+123456"}`, err: ``},
 	}
 
 	for _, test := range tests {
