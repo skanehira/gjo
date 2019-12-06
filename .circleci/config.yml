@@ -1,0 +1,14 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: circleci/golang:latest
+    working_directory: /go/src/github.com/skanehira/gjo
+    steps:
+    - checkout
+    - run:
+        name: Unit test
+        command: go test -v
+    - run:
+        name: Build
+        run: go build -v
