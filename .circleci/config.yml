@@ -11,4 +11,4 @@ jobs:
         command: go test -v
     - run:
         name: Build
-        run: go build -v
+        command: go build -v

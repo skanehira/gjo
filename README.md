@@ -1,6 +1,6 @@
 # gjo
 
-[![CircleCI](https://circleci.com/gh/skanehira/gjo.svg?style=svg)](https://circleci.com/gh/skanehira/gjo)
+[![CircleCI](https://img.shields.io/circleci/project/github/skanehira/gjo/master.svg)](https://circleci.com/gh/skanehira/gjo/tree/master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/skanehira/gjo)](https://goreportcard.com/report/github.com/skanehira/gjo)
 
 Small utility to create JSON objects.  
