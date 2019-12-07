@@ -1,6 +1,6 @@
 # gjo
 
-[![GitHub Actoins status](https://github.com/skanehira/gjo/workflows/Go/badge.svg)](https://github.com/skanehira/gjo/actions)
+[![GitHub Actions status](https://github.com/skanehira/gjo/workflows/Go/badge.svg)](https://github.com/skanehira/gjo/actions)
 [![CircleCI](https://img.shields.io/circleci/project/github/skanehira/gjo/master.svg)](https://circleci.com/gh/skanehira/gjo/tree/master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/skanehira/gjo)](https://goreportcard.com/report/github.com/skanehira/gjo)
 
