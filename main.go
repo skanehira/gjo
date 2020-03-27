@@ -55,6 +55,9 @@ func parseValue(s string) interface{} {
 	if s == "false" {
 		return false
 	}
+	if s == "null" {
+		return nil
+	}
 
 	f, err := strconv.ParseFloat(s, 64)
 	if err == nil {
