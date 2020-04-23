@@ -127,9 +127,9 @@ func doVersion() error {
 	return enc.Encode(&Version{
 		Program:     "gjo",
 		Description: "This is inspired by jpmens/jo",
-		Author:      "gorilla0513",
+		Author:      "skanehira",
 		Repo:        "https://github.com/skanehira/gjo",
-		Version:     "1.0.2",
+		Version:     "1.0.3",
 	})
 }
 
