@@ -45,8 +45,11 @@ $ gjo -p status=$(gjo name=gorilla age=26 lang=$(gjo -a Go Java PHP))
     }
 }
 $ gjo -h
-Usage of gjo:
+Usage of ./gjo:
+  -B    disable treating true/false as bool
   -a    creates an array of words
+  -e    empty stdin is not an error
+  -n    ignore keys with empty values
   -p    pretty-prints
   -v    show version
 ```

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -20,9 +21,12 @@ type Version struct {
 }
 
 var (
-	array   = flag.Bool("a", false, "creates an array of words")
-	pretty  = flag.Bool("p", false, "pretty-prints")
-	version = flag.Bool("v", false, "show version")
+	array              = flag.Bool("a", false, "creates an array of words")
+	disable_bool       = flag.Bool("B", false, "disable treating true/false as bool")
+	ignore_empty_stdin = flag.Bool("e", false, "empty stdin is not an error")
+	ignore_empty_keys  = flag.Bool("n", false, "ignore keys with empty values")
+	pretty             = flag.Bool("p", false, "pretty-prints")
+	version            = flag.Bool("v", false, "show version")
 
 	stdin  io.Reader = os.Stdin
 	stdout io.Writer = os.Stdout
@@ -50,12 +54,21 @@ func parseValue(s string) interface{} {
 		return json.RawMessage(s)
 	}
 	if s == "true" {
+		if *disable_bool {
+			return s
+		}
 		return true
 	}
 	if s == "false" {
+		if *disable_bool {
+			return s
+		}
 		return false
 	}
 	if s == "null" {
+		if *disable_bool {
+			return s
+		}
 		return nil
 	}
 
@@ -112,7 +125,10 @@ func doObject(args []string) (interface{}, error) {
 			key := kv[0][:len(kv[0])-1]
 			jsons[key] = v
 		} else {
-			jsons[kv[0]] = parseValue(kv[1])
+			value := parseValue(kv[1])
+			if value != "" || !*ignore_empty_keys {
+				jsons[kv[0]] = value
+			}
 		}
 	}
 
@@ -133,7 +149,7 @@ func doVersion() error {
 	})
 }
 
-func run() int {
+func run(stdin io.Reader) int {
 	flag.Parse()
 	if *version {
 		err := doVersion()
@@ -146,8 +162,18 @@ func run() int {
 
 	args := flag.Args()
 	if len(args) == 0 {
-		flag.Usage()
-		return 2
+		dat, err := ioutil.ReadAll(stdin)
+		if err != nil {
+			fmt.Fprintln(stderr, err)
+		}
+		args = strings.Fields(string(dat))
+		if len(args) == 0 {
+			if *ignore_empty_stdin {
+				return 0
+			}
+			flag.Usage()
+			return 2
+		}
 	}
 
 	var value interface{}
@@ -175,5 +201,5 @@ func run() int {
 }
 
 func main() {
-	os.Exit(run())
+	os.Exit(run(os.Stdin))
 }
