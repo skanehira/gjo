@@ -21,12 +21,12 @@ type Version struct {
 }
 
 var (
-	array              = flag.Bool("a", false, "creates an array of words")
-	disable_bool       = flag.Bool("B", false, "disable treating true/false as bool")
-	ignore_empty_stdin = flag.Bool("e", false, "empty stdin is not an error")
-	ignore_empty_keys  = flag.Bool("n", false, "ignore keys with empty values")
-	pretty             = flag.Bool("p", false, "pretty-prints")
-	version            = flag.Bool("v", false, "show version")
+	array            = flag.Bool("a", false, "creates an array of words")
+	disableBool      = flag.Bool("B", false, "disable treating true/false as bool")
+	ignoreEmptyStdin = flag.Bool("e", false, "empty stdin is not an error")
+	ignoreEmptyKeys  = flag.Bool("n", false, "ignore keys with empty values")
+	pretty           = flag.Bool("p", false, "pretty-prints")
+	version          = flag.Bool("v", false, "show version")
 
 	stdin  io.Reader = os.Stdin
 	stdout io.Writer = os.Stdout
@@ -54,19 +54,19 @@ func parseValue(s string) interface{} {
 		return json.RawMessage(s)
 	}
 	if s == "true" {
-		if *disable_bool {
+		if *disableBool {
 			return s
 		}
 		return true
 	}
 	if s == "false" {
-		if *disable_bool {
+		if *disableBool {
 			return s
 		}
 		return false
 	}
 	if s == "null" {
-		if *disable_bool {
+		if *disableBool {
 			return s
 		}
 		return nil
@@ -126,7 +126,7 @@ func doObject(args []string) (interface{}, error) {
 			jsons[key] = v
 		} else {
 			value := parseValue(kv[1])
-			if value != "" || !*ignore_empty_keys {
+			if value != "" || !*ignoreEmptyKeys {
 				jsons[kv[0]] = value
 			}
 		}
@@ -168,7 +168,7 @@ func run(stdin io.Reader) int {
 		}
 		args = strings.Fields(string(dat))
 		if len(args) == 0 {
-			if *ignore_empty_stdin {
+			if *ignoreEmptyStdin {
 				return 0
 			}
 			flag.Usage()

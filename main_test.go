@@ -173,7 +173,7 @@ func TestRun(t *testing.T) {
 		cmdoutput.Reset()
 
 		os.Args = append([]string{""}, test.args...)
-		for test_flag, value := range _flags(test.flags) {
+		for test_flag, value := range defaultFlags(test.flags) {
 			flag.CommandLine.Set(test_flag, value)
 		}
 
@@ -189,9 +189,9 @@ func TestRun(t *testing.T) {
 	}
 }
 
-// _flags merges a set of override values into the standard set of
+// defaultFlags merges a set of override values into the standard set of
 // command line flags, overriding the default values.
-func _flags(overrides map[string]string) map[string]string {
+func defaultFlags(overrides map[string]string) map[string]string {
 	// HEADS UP, keep this up to date w.r.t. flag settings in main.go
 	args := map[string]string{
 		"a": "false",
